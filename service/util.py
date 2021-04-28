@@ -8,9 +8,12 @@ import flask
 # Generic Constants
 ######################################################################################
 BASE_REVIEW_URL = 'https://www.lendingtree.com/reviews'
+
 CONTENT_TYPE_TEXT = 'text/plain'
 CONTENT_TYPE_JSON = 'application/json; charset=utf-8'
 
+STARS_RGX = r'\((\d+)\s+of\s+(\d+)\).*'
+DATE_PARSE = 'Reviewed in %B %Y'
 
 def make_response_object(body, headers=None, response_code=200):
     """Format response according to accept header.

@@ -25,3 +25,31 @@ Create an API service that collects and returns reviews found from the website L
 __*to be complete within 72 hours*__
 
 ---
+
+### Flask
+
+Simple Flask setup; a single resource path, some utility functions to keep things a little cleaner.
+There is room for improvement, but could spend months on it; abstraction of the response and error handling,
+response body transformation, further request validation, etc.  The resource paths, if more than a handful,
+are better to be added via a decorator on the class.
+
+To use:
+
+```
+cd [path-to-repo]
+make
+make run
+
+* In your favorite browser go to `http://localhost:8019/api/review?url=`
+* supply a lending tree url in the param 'url'
+```
+
+Running tests:
+
+```
+cd [path-to-repo]
+make
+make test
+
+* Coverage report generated to [path-to-repo]/htmlcov
+```

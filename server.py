@@ -42,6 +42,5 @@ def all_exception_handler(error):
 API.add_resource(service.reviews.ReviewRequestHandler, '/api/reviews')
 
 
-
 if __name__ == "__main__":
     APP.run(host='0.0.0.0', port=8019, debug=True)
