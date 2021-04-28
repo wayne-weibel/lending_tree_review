@@ -47,8 +47,10 @@ sloc: venv
 	sloccount --duplicates --wide --details $(SRC_DIR) | fgrep -v .git | fgrep -v venv | fgrep -v tests > sloccount.sc || :
 
 test: venv
-	${PYTHON} manage.py test -v 2 || :
-	${PYBIN}/coverage html
+	cd $(SRC_DIR) && ${PYTEST} --junitxml=xunit.xml --cov=. --cov-report xml:coverage.xml --cov-config .coveragerc tests || :
+
+coverage: venv
+	cd $(SRC_DIR) && ${PYTEST} -vv --junitxml=xunit.xml --cov=. --cov-report=html --cov-config .coveragerc tests || :
 
 flakes: venv
 	find $(SRC_DIR) -name "*.py" | egrep -v '^./tests/' | egrep -v '^./venv/' | xargs ${PYBIN}/pyflakes > pyflakes.log || :
@@ -57,4 +59,4 @@ lint: venv
 	find $(SRC_DIR) -name "*.py" | egrep -v '^./tests/' | egrep -v '^./venv/' | xargs ${PYBIN}/pylint --output-format=parseable --rcfile=${LINTRC} --reports=y > pylint.log || :
 
 run: venv
-	${PYTHON} manage.py runserver
+	${PYTHON} server.py
