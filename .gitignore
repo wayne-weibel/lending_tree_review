@@ -130,3 +130,4 @@ dmypy.json
 
 # Generated docs
 README.html
+xunit.xml

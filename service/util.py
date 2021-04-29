@@ -4,9 +4,7 @@ utility function
 import json
 import flask
 
-######################################################################################
 # Generic Constants
-######################################################################################
 BASE_REVIEW_URL = 'https://www.lendingtree.com/reviews'
 
 CONTENT_TYPE_TEXT = 'text/plain'

@@ -2,6 +2,7 @@ SHELL:=/bin/bash
 PYTHONPATH:=..:.
 PATH := venv/bin:$(PATH)
 PYTHON	= PYTHONPATH=..:. venv/bin/python
+PYTEST	= PYTHONPATH=..:. venv/bin/pytest
 PYDIRCHK= 'import sys; print(sys.prefix)'
 PYDIR	= $(shell ${PYTHON} -c ${PYDIRCHK})
 PYBIN	= ${PYDIR}/bin

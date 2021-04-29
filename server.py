@@ -27,16 +27,6 @@ def resource_not_found(error):
     desc = 'The requested URL was not found on the server.'
     return service.util.make_response_object({'message': msg, 'description': desc}, response_code=404)
 
-@APP.errorhandler(Exception)
-def all_exception_handler(error):
-    """For ANY uncaught exception log it.
-    :param error: The exception
-    :returns: Nothing
-    :raises: Re-raises the exception
-    """
-    print('Uncaught Exception: {}'.format(error))
-    return service.util.make_response_object({'message': 'Internal Server Error'}, response_code=500)
-
 
 # resource paths
 API.add_resource(service.reviews.ReviewRequestHandler, '/api/reviews')

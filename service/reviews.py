@@ -19,8 +19,8 @@ class ReviewRequestHandler(flask_restful.Resource):
 
     def get(self):
         """
-        Returns a list of the account team roles
-        :return: a list of the account team roles
+        Returns a list of reviews for the supplied url
+        :return: a list of reviews
         """
         url = flask.request.args.get('url')
         if not url:
