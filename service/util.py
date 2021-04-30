@@ -42,7 +42,7 @@ def success(body=None):
     :param body: Response body
     :return: Flask Response Object
     """
-    return make_response_object(body, response_code=200)
+    return make_response_object({'data': body}, response_code=200)
 
 def not_found(body=None):
     """
@@ -50,7 +50,7 @@ def not_found(body=None):
     :param body: Response body
     :return: Flask Response Object
     """
-    return make_response_object(body, response_code=404)
+    return make_response_object({'error': body}, response_code=404)
 
 def malformed(body=None):
     """
@@ -58,4 +58,4 @@ def malformed(body=None):
     :param body: Response body
     :return: Flask Response Object
     """
-    return make_response_object(body, response_code=400)
+    return make_response_object({'error': body}, response_code=400)

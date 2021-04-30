@@ -37,17 +37,40 @@ class ReviewRequestHandler(flask_restful.Resource):
         except ValueError:
             return malformed('Invalid Lending Tree URL')
 
-        url = urlunparse(url)
-        html = requests.get(url)
-        if html.status_code != 200:
-            return not_found('{} was Not Found'.format(url))
+        _filter = flask.request.args.get('filter')
+        _max = flask.request.args.get('max')
 
-        soup = BeautifulSoup(html.text, 'html.parser')
-        reviews = soup.find_all('div', class_='mainReviews')
+        url = urlunparse(url)
+
+        pid = 1
+        reviews = []
+        while True:
+            _url = url
+            _url += '?pid='+str(pid)
+            if _filter:
+                _url += '&state='+_filter
+
+            print(('GET', _url))
+            html = requests.get(_url)
+            if html.status_code != 200:
+                if pid == 1:
+                    return not_found('{} was Not Found'.format(url))
+                break
+
+            soup = BeautifulSoup(html.text, 'html.parser')
+            _reviews = soup.find_all('div', class_='mainReviews')
+            if not _reviews:
+                break
+
+            reviews += _reviews
+            pid += 1
+            if _max and pid > int(_max):
+                break
+
         if not reviews:
             return not_found('No Reviews were Found')
 
-        data = {'url': url, 'reviews': self.__review_data(reviews)}
+        data = {'url': url, 'reviews': self.__review_data(reviews), 'filter': _filter}
         return success(data)
 
     def __review_data(self, reviews):
@@ -66,8 +89,8 @@ class ReviewRequestHandler(flask_restful.Resource):
         review_list = []
         for review in reviews:
             parsed = review_data.copy()
-
             details = review.select_one('div.reviewDetail')
+
             parsed['title'] = details.select_one('p.reviewTitle').text.strip()
             parsed['content'] = details.select_one('p.reviewText').text.strip()
 

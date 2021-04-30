@@ -23,29 +23,29 @@ class TestReviewRequestHandler:
         with APP.test_client() as client:
             response = client.get('/api/reviews')
         assert response.status_code == 400
-        assert json.loads(response.data) == '"URL" parameter required'
+        assert json.loads(response.data) == {'error': '"URL" parameter required'}
 
     def test_review_malformed(self):
         '''test malformed request'''
         with APP.test_client() as client:
             response = client.get('/api/reviews?url={}'.format(self.not_lending_tree))
         assert response.status_code == 400
-        assert json.loads(response.data) == 'Invalid Lending Tree URL'
+        assert json.loads(response.data) == {'error': 'Invalid Lending Tree URL'}
 
         with APP.test_client() as client:
             response = client.get('/api/reviews?url={}'.format(self.not_length))
         assert response.status_code == 400
-        assert json.loads(response.data) == 'Invalid Lending Tree URL'
+        assert json.loads(response.data) == {'error': 'Invalid Lending Tree URL'}
 
         with APP.test_client() as client:
             response = client.get('/api/reviews?url={}'.format(self.not_reviews))
         assert response.status_code == 400
-        assert json.loads(response.data) == 'Invalid Lending Tree URL'
+        assert json.loads(response.data) == {'error': 'Invalid Lending Tree URL'}
 
         with APP.test_client() as client:
             response = client.get('/api/reviews?url={}'.format(self.not_number_end))
         assert response.status_code == 400
-        assert json.loads(response.data) == 'Invalid Lending Tree URL'
+        assert json.loads(response.data) == {'error': 'Invalid Lending Tree URL'}
 
     @mock.patch('service.reviews.requests')
     def test_url_not_found(self, requests):
@@ -54,7 +54,7 @@ class TestReviewRequestHandler:
             response = client.get('/api/reviews?url={}'.format(self.valid_url))
         assert requests.get.called_with(self.valid_url)
         assert response.status_code == 404
-        assert json.loads(response.data) == '{} was Not Found'.format(self.valid_url)
+        assert json.loads(response.data) == {'error': '{} was Not Found'.format(self.valid_url)}
 
     @mock.patch('service.reviews.requests')
     def test_reviews_not_found(self, requests):
@@ -65,19 +65,19 @@ class TestReviewRequestHandler:
             response = client.get('/api/reviews?url={}'.format(self.valid_url))
         assert requests.get.called_with(self.valid_url)
         assert response.status_code == 404
-        assert json.loads(response.data) == 'No Reviews were Found'
+        assert json.loads(response.data) == {'error': 'No Reviews were Found'}
 
     @mock.patch('service.reviews.requests')
     def test_valid_reviews(self, requests):
         '''test valid reviews'''
         response = mock.MagicMock(status_code=200, text=open('tests/valid_review.html').read())
-        requests.get.return_value = response
+        requests.get.side_effect = [response, mock.MagicMock(status_code=404)] # need 404 to stop page loop
         with APP.test_client() as client:
             response = client.get('/api/reviews?url={}'.format(self.valid_url))
         assert requests.get.called_with(self.valid_url)
         assert response.status_code == 200
 
-        expected = {
+        expected = { 'data': {
             'reviews': [{'author': 'Ann from Tallahassee, FL',
                           'content': 'TEST REVIEW CONTEXT',
                           'date': '2021-04-01',
@@ -87,6 +87,7 @@ class TestReviewRequestHandler:
                                      'Review Type': 'Loan Officer Review'},
                           'stars': {'out_of': 5, 'score': 3},
                           'title': 'Great Service'}],
-            'url': self.valid_url
-        }
+            'url': self.valid_url,
+            'filter': None,
+        }}
         assert json.loads(response.data) == expected
